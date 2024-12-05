@@ -1,16 +1,13 @@
-const express = require('express')
-const app = express()
-const port = 3000
+import React from 'react';
+import ReactDOM from 'react-dom';
+import './index.css'; // Optional, for styling
+import App from './app'; // Main component
 
-//Express methods: CRUD
-//get => read
-// Rout => / = root/home page
-app.get('/', (req, res) => {
-  res.send('Hello World!')
-})
+ReactDOM.render(
+  <React.StrictMode>
+    <App />
+  </React.StrictMode>,
+  document.getElementById('root') // Make sure you have an element with id "root" in your index.html
+);
 
-// /about => about us
-// /contact => contact us
-app.listen(port, () => {
-  console.log(`Example app listening on port ${port}`)
-})
+reportWebVitals(); // Optional
