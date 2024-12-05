@@ -1,0 +1,256 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Linha do Tempo de Gastos</title>
+    <style>
+        /* Estilos básicos */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+        }
+
+        header {
+            background-color: #4CAF50;
+            color: white;
+            text-align: center;
+            padding: 1em 0;
+        }
+
+        nav {
+            background-color: #333;
+            overflow: hidden;
+            margin-bottom: 20px;
+        }
+
+        nav a {
+            float: left;
+            display: block;
+            color: white;
+            text-align: center;
+            padding: 14px 16px;
+            text-decoration: none;
+        }
+
+        nav a:hover {
+            background-color: #ddd;
+            color: black;
+        }
+
+        main {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+
+        /* Estilos da linha do tempo */
+        .timeline {
+            position: relative;
+            max-width: 600px;
+            margin: auto;
+            padding: 20px;
+        }
+
+        .timeline::after {
+            content: '';
+            position: absolute;
+            width: 4px;
+            background-color: #4CAF50;
+            top: 0;
+            bottom: 0;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .timeline-item {
+            padding: 10px;
+            position: relative;
+            width: 45%;
+            margin: 30px 0;
+            border-radius: 6px;
+            box-shadow: 0 0 5px rgba(0, 0, 0, 0.1);
+            background-color: #fff;
+        }
+
+        .timeline-item.left {
+            left: 1%;
+            text-align: right;
+            margin-right: 56%; /* Espaço para os cards à esquerda */
+        }
+
+        .timeline-item.right {
+            left: 50%;
+            margin-left: 1%; /* Espaço ajustado para os cards à direita */
+        }
+
+        .timeline-item::before {
+            content: '';
+            position: absolute;
+            width: 20px;
+            height: 20px;
+            background-color: white;
+            border: 4px solid #4CAF50;
+            top: 15px;
+            border-radius: 50%;
+            z-index: 1;
+        }
+
+        .timeline-item.left::before {
+            right: -20px;
+        }
+
+        .timeline-item.right::before {
+            left: -20px;
+        }
+
+        .timeline-date {
+            font-size: 0.9em;
+            color: #777;
+        }
+
+        .timeline-description {
+            font-size: 1.1em;
+            margin: 5px 0;
+        }
+
+        .timeline-value {
+            font-size: 1.2em;
+            font-weight: bold;
+        }
+
+     
+    </style>
+</head>
+<body>
+
+<header>
+    <h1>Linha do Tempo de Gastos</h1>
+</header>
+
+<nav>
+    <a href="index.html">Tabela de Gastos</a>
+    <a href="orcamento.html">Orçamento</a>
+    <a href="cadastro.html">Cadastrar Despesa/Entrada</a>
+    <a href="grafico.html">Gráfico de Saldo</a>
+    <a href="categorias.html">Categorias e Subcategorias</a>
+    <a href="linha_do_tempo.html">Linha do tempo</a>
+    <a href="poupanca.html">Poupança</a>
+    <a href="viagem.html">Viagem</a>
+    <a href="serasa.html">Serasa</a>
+</nav>
+
+<main>
+    <div class="timeline" id="timeline">
+        <!-- Items da linha do tempo serão inseridos via JavaScript -->
+    </div>
+</main>
+
+<script>
+    // Dados das transações
+    const transacoes = [
+    { data: "09/10/2024", descricao: "Transferência recebida pelo Pix - WISE BRASIL INSTITUICAO DE PAGAMENTO LTDA", valor: 4036.05, tipo: "Entrada", categoria: "Transferência" },
+  { data: "09/10/2024", descricao: "Transferência enviada pelo Pix - WISE BRASIL PAGAMENTOS LTDA", valor: -544.26, tipo: "Saída", categoria: "Transferência" },
+  { data: "09/10/2024", descricao: "Pagamento de fatura", valor: -3115.99, tipo: "Saída", categoria: "Fatura" },
+  { data: "09/10/2024", descricao: "Pagamento de fatura", valor: -757.52, tipo: "Saída", categoria: "Fatura" },
+  { data: "08/10/2024", descricao: "Transferência Recebida - MARCOS LEVY MORAES DA SILVEIRA", valor: 299.90, tipo: "Entrada", categoria: "Transferência" },
+  { data: "06/10/2024", descricao: "Transferência enviada pelo Pix - HT", valor: -47.90, tipo: "Saída", categoria: "Transferência" },
+  { data: "04/10/2024", descricao: "Transferência enviada pelo Pix - WISE BRASIL PAGAMENTOS LTDA", valor: -1500.00, tipo: "Saída", categoria: "Transferência" },
+  { data: "04/10/2024", descricao: "Compra no débito - Pastelotta", valor: -91.00, tipo: "Saída", categoria: "Alimentação" },
+  { data: "04/10/2024", descricao: "Compra no débito - Sorveteria Kurumim", valor: -21.00, tipo: "Saída", categoria: "Alimentação" },
+  { data: "04/10/2024", descricao: "Compra no débito - Mais Sabor e Cia", valor: -58.54, tipo: "Saída", categoria: "Alimentação" },
+  { data: "03/10/2024", descricao: "Transferência enviada pelo Pix - coema", valor: -11.49, tipo: "Saída", categoria: "Transferência" },
+  { data: "03/10/2024", descricao: "Pagamento de fatura", valor: -100.00, tipo: "Saída", categoria: "Fatura" },
+  { data: "02/10/2024", descricao: "Compra no débito - Espeto Na Brasa", valor: -37.00, tipo: "Saída", categoria: "Alimentação" },
+  { data: "01/10/2024", descricao: "Transferência enviada pelo Pix - S L CARDOSO DA ROCHA LTDA", valor: -29.00, tipo: "Saída", categoria: "Transferência" },
+  { data: "01/10/2024", descricao: "Transferência enviada pelo Pix - coema", valor: -7.77, tipo: "Saída", categoria: "Transferência" },
+  { data: "01/10/2024", descricao: "Compra no débito - Elainecristina", valor: -22.00, tipo: "Saída", categoria: "Alimentação" },
+  { data: "01/10/2024", descricao: "Pagamento de fatura", valor: -1400.00, tipo: "Saída", categoria: "Fatura" },
+  { data: "01/10/2024", descricao: "Transferência enviada pelo Pix - JOSE AUGUSTO PEREIRA SILVEIRA", valor: -1130.00, tipo: "Saída", categoria: "Transferência" },
+  { data: "30/09/2024", descricao: "Transferência enviada pelo Pix - ELITE DO BRASIL", valor: -120.00, tipo: "Saída", categoria: "Transferência" },
+  { data: "29/09/2024", descricao: "Pagamento de fatura", valor: -400.00, tipo: "Saída", categoria: "Fatura" },
+  { data: "28/09/2024", descricao: "Transferência enviada pelo Pix - TEMPUS COMERCIO", valor: -8.50, tipo: "Saída", categoria: "Transferência" },
+  { data: "27/09/2024", descricao: "Transferência enviada pelo Pix - TEMPUS COMERCIO", valor: -8.50, tipo: "Saída", categoria: "Transferência" },
+  { data: "26/09/2024", descricao: "Compra no débito - Sorveteria Kurumim", valor: -20.00, tipo: "Saída", categoria: "Alimentação" },
+  { data: "25/09/2024", descricao: "Transferência enviada pelo Pix - COEMA", valor: -12.00, tipo: "Saída", categoria: "Transferência" },
+  { data: "24/09/2024", descricao: "Transferência enviada pelo Pix - TEMPUS COMERCIO", valor: -30.00, tipo: "Saída", categoria: "Transferência" },
+  { data: "23/09/2024", descricao: "Transferência enviada pelo Pix - CARVALHO E DIAS COMERCIO DE ALIMENTOS LTDA", valor: -10.00, tipo: "Saída", categoria: "Transferência" },
+  { data: "22/09/2024", descricao: "Pagamento de fatura", valor: -310.00, tipo: "Saída", categoria: "Fatura" },
+  { data: "21/09/2024", descricao: "Pagamento de fatura", valor: -250.00, tipo: "Saída", categoria: "Fatura" },
+  { data: "20/09/2024", descricao: "Transferência enviada pelo Pix - UIBSON OLIVEIRA DE SOUZA", valor: -55.00, tipo: "Saída", categoria: "Transferência" },
+  { data: "19/09/2024", descricao: "Transferência enviada pelo Pix - Eudson Freitas Castro", valor: -30.00, tipo: "Saída", categoria: "Transferência" },
+  { data: "18/09/2024", descricao: "Transferência enviada pelo Pix - VIVIANE OLIVEIRA DA SILVA", valor: -24.80, tipo: "Saída", categoria: "Transferência" },
+  { data: "17/09/2024", descricao: "Compra no débito - Giga Burger", valor: -30.00, tipo: "Saída", categoria: "Alimentação" },
+  { data: "16/09/2024", descricao: "Transferência enviada pelo Pix - ELITE DO BRASIL", valor: -53.25, tipo: "Saída", categoria: "Transferência" },
+  { data: "15/09/2024", descricao: "Pagamento de fatura", valor: -800.00, tipo: "Saída", categoria: "Fatura" },
+  { data: "14/09/2024", descricao: "Pagamento de fatura", valor: -580.00, tipo: "Saída", categoria: "Fatura" },
+  { data: "13/09/2024", descricao: "Pagamento de fatura", valor: -250.00, tipo: "Saída", categoria: "Fatura" },
+  { data: "12/09/2024", descricao: "Compra no débito - Sumauma Estacionamento", valor: -18.00, tipo: "Saída", categoria: "Transporte" },
+  { data: "12/09/2024", descricao: "Pagamento de fatura", valor: -1300.00, tipo: "Saída", categoria: "Fatura" },
+  { data: "11/09/2024", descricao: "Pagamento de fatura", valor: -530.00, tipo: "Saída", categoria: "Fatura" },
+  { data: "10/09/2024", descricao: "Compra no débito - Sorveteria Kurumim", valor: -30.00, tipo: "Saída", categoria: "Alimentação" },
+  { data: "09/09/2024", descricao: "Compra no débito - Giga Burger", valor: -30.00, tipo: "Saída", categoria: "Alimentação" },
+  { data: "09/09/2024", descricao: "Pagamento de fatura", valor: -1290.00, tipo: "Saída", categoria: "Fatura" },
+  { data: "08/09/2024", descricao: "Transferência enviada pelo Pix - CARVALHO E DIAS COMERCIO DE ALIMENTOS LTDA", valor: -22.00, tipo: "Saída", categoria: "Transferência" },
+  { data: "08/09/2024", descricao: "Compra no débito - Espeto Na Brasa", valor: -20.00, tipo: "Saída", categoria: "Alimentação" },
+  { data: "07/09/2024", descricao: "Transferência enviada pelo Pix - HELLEN", valor: -20.00, tipo: "Saída", categoria: "Transferência" },
+  { data: "07/09/2024", descricao: "Transferência recebida pelo Pix - ALMEIDA", valor: 50.00, tipo: "Entrada", categoria: "Transferência" },
+  { data: "06/09/2024", descricao: "Transferência recebida pelo Pix - CARLA", valor: 20.00, tipo: "Entrada", categoria: "Transferência" },
+  { data: "05/09/2024", descricao: "Transferência recebida pelo Pix - EUDSON FREITAS CASTRO", valor: 40.00, tipo: "Entrada", categoria: "Transferência" },
+  { data: "05/09/2024", descricao: "Transferência enviada pelo Pix - Glycia Loren Mendonça de Carvalho", valor: -27.00, tipo: "Saída", categoria: "Transferência" },
+  { data: "05/09/2024", descricao: "Pagamento de fatura", valor: -1900.00, tipo: "Saída", categoria: "Fatura" },
+  { data: "05/09/2024", descricao: "Transferência enviada pelo Pix - Glycia Loren Mendonça de Carvalho", valor: -20.00, tipo: "Saída", categoria: "Transferência" },
+  { data: "05/09/2024", descricao: "Transferência recebida pelo Pix - PAYPAL DO BRASIL INSTITUICAO DE PAGAMENTO LTDA", valor: 128.19, tipo: "Entrada", categoria: "Transferência" },
+  { data: "04/09/2024", descricao: "Transferência enviada pelo Pix - Tempus Comercio", valor: -6.50, tipo: "Saída", categoria: "Transferência" },
+  { data: "04/09/2024", descricao: "Transferência enviada pelo Pix - Tempus Comercio", valor: -6.50, tipo: "Saída", categoria: "Transferência" },
+  { data: "04/09/2024", descricao: "Compra no débito - Fino Sabor", valor: -36.00, tipo: "Saída", categoria: "Alimentação" },
+  { data: "03/09/2024", descricao: "Transferência enviada pelo Pix - UBIRACIANA ALVES CESAR", valor: -4.00, tipo: "Saída", categoria: "Transferência" },
+  { data: "03/09/2024", descricao: "Transferência enviada pelo Pix - UBIRACIANA ALVES CESAR", valor: -32.63, tipo: "Saída", categoria: "Transferência" },
+  { data: "03/09/2024", descricao: "Transferência enviada pelo Pix - Tempus Comercio", valor: -6.50, tipo: "Saída", categoria: "Transferência" },
+  { data: "02/09/2024", descricao: "Transferência enviada pelo Pix - Eudson Freitas Castro", valor: -20.00, tipo: "Saída", categoria: "Transferência" },
+  { data: "02/09/2024", descricao: "Transferência enviada pelo Pix - Tempus Comercio", valor: -4.50, tipo: "Saída", categoria: "Transferência" },
+  { data: "02/09/2024", descricao: "Pagamento de boleto efetuado - CAIXA ECONOMICA FEDERAL - SIAPI", valor: -258.21, tipo: "Saída", categoria: "Boleto" },
+  { data: "02/09/2024", descricao: "Pagamento de boleto efetuado - CAIXA ECONOMICA FEDERAL - SIAPI", valor: -263.93, tipo: "Saída", categoria: "Boleto" },
+  { data: "01/09/2024", descricao: "Transferência enviada pelo Pix - IGREJA DE DEUS PENTECOSTAL DO BRASIL DO AMAZONAS", valor: -100.00, tipo: "Saída", categoria: "Transferência" },
+  { data: "01/09/2024", descricao: "Transferência enviada pelo Pix - JOSE AUGUSTO PEREIRA SILVEIRA", valor: -1271.00, tipo: "Saída", categoria: "Transferência" }
+    ];
+
+    // Função para criar os elementos da linha do tempo
+    function criarLinhaDoTempo() {
+        const timeline = document.getElementById("timeline");
+
+        transacoes.forEach((transacao, index) => {
+            // Cria o elemento do item na linha do tempo
+            const item = document.createElement("div");
+            item.className = `timeline-item ${transacao.tipo.toLowerCase()} ${index % 2 === 0 ? 'left' : 'right'}`;
+
+            // Formata o valor para exibir o símbolo
+            const valorFormatado = `${transacao.valor < 0 ? '-' : ''}R$ ${Math.abs(transacao.valor).toFixed(2)}`;
+
+            item.innerHTML = `
+                <div class="timeline-date">${transacao.data}</div>
+                <div class="timeline-description">${transacao.descricao}</div>
+                <div class="timeline-value">${valorFormatado}</div>
+            `;
+
+            // Adiciona o item à linha do tempo
+            timeline.appendChild(item);
+        });
+    }
+
+    // Inicializa a linha do tempo ao carregar a página
+    window.onload = criarLinhaDoTempo;
+</script>
+
+</body>
+</html>

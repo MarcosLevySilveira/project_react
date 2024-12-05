@@ -1,0 +1,369 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gerenciar Despesas/Entradas</title>
+    <style>
+        /* Global Styles */
+        /* The body styles set the default font, background color, and remove margin and padding */
+        body {
+            font-family: Arial, sans-serif;
+            margin: 0;
+            padding: 0;
+            background-color: #f4f4f9;
+        }
+
+        /* Header styling - centered text, green background, and white text */
+        header {
+            background-color: #4CAF50;
+            color: white;
+            text-align: center;
+            padding: 1em 0;
+        }
+
+        /* Navigation menu styles */
+        nav {
+            background-color: #333;
+            overflow: hidden;
+        }
+
+        /* Styling the links inside the navigation menu */
+        nav a {
+            float: left;
+            display: block;
+            color: white;
+            text-align: center;
+            padding: 14px 16px;
+            text-decoration: none;
+        }
+
+        /* Add hover effect for navigation links */
+        nav a:hover {
+            background-color: #ddd;
+            color: black;
+        }
+
+        /* Main section styling */
+        main {
+            max-width: 800px;
+            margin: 20px auto;
+            padding: 20px;
+            background: #fff;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.1);
+            border-radius: 8px;
+        }
+
+        /* Form styling */
+        h1 {
+            color: #333;
+            text-align: center;
+        }
+
+        /* Form elements like labels, inputs, and selects */
+        form {
+            display: flex;
+            flex-direction: column;
+        }
+
+        label {
+            margin-top: 10px;
+            font-weight: bold;
+            color: #333;
+        }
+
+        input,
+        select {
+            padding: 10px;
+            margin-top: 5px;
+            font-size: 1em;
+            border: 1px solid #ddd;
+            border-radius: 5px;
+        }
+
+        input[type="date"],
+        input[type="number"] {
+            max-width: 300px;
+        }
+
+        /* Submit button styling */
+        button {
+            margin-top: 20px;
+            padding: 12px;
+            color: white;
+            background-color: #4CAF50;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+        }
+
+        /* Button hover effect */
+        button:hover {
+            background-color: #45a049;
+        }
+
+        /* Cancel button styling */
+        .btn-cancel {
+            margin-top: 10px;
+            padding: 10px;
+            color: #333;
+            background-color: #e2e8f0;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1em;
+            text-align: center;
+            text-decoration: none;
+        }
+
+        /* Table styling */
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 20px;
+            font-size: 1em;
+            color: #333;
+        }
+
+        table,
+        th,
+        td {
+            border: 1px solid #ddd;
+        }
+
+        th,
+        td {
+            padding: 12px;
+            text-align: left;
+        }
+
+        th {
+            background-color: #4CAF50;
+            color: white;
+        }
+
+        /* Action buttons in the table */
+        button {
+            padding: 5px 10px;
+            margin-top: 5px;
+            background-color: #f0ad4e;
+            border: none;
+            color: white;
+            cursor: pointer;
+            border-radius: 5px;
+        }
+
+        /* Button hover effect */
+        button:hover {
+            background-color: #ec971f;
+        }
+
+        button:active {
+            background-color: #d9534f;
+        }
+
+        button:focus {
+            outline: none;
+        }
+    </style>
+    <script>
+        /* Function to save data from the form into the local storage */
+        function saveData(event) {
+            event.preventDefault(); // Prevent the form from reloading the page
+
+            // Get values from the form fields
+            const data = document.getElementById("data").value;
+            const categoria = document.getElementById("categoria").value;
+            const descricao = document.getElementById("descricao").value;
+            const valor = parseFloat(document.getElementById("valor").value);
+            const tipo = document.getElementById("tipo").value;
+
+            // Create an object to represent the new expense or entry
+            const novaDespesa = { data, categoria, descricao, valor, tipo };
+
+            // Retrieve existing expenses from local storage (or an empty array if none exist)
+            let despesas = JSON.parse(localStorage.getItem("despesas")) || [];
+
+            // Add the new entry to the expenses array
+            despesas.push(novaDespesa);
+
+            // Save the updated expenses list back into local storage
+            localStorage.setItem("despesas", JSON.stringify(despesas));
+
+            // Notify the user that the data has been saved and reload the page to refresh the list
+            alert("Cadastro realizado com sucesso!");
+            window.location.reload();
+        }
+
+        /* Function to load and display the saved data from local storage into the table */
+        function loadData() {
+            const despesas = JSON.parse(localStorage.getItem("despesas")) || [];
+            const tableBody = document.getElementById("despesasList");
+            tableBody.innerHTML = ""; // Clear the table before reloading data
+
+            // Loop through each expense entry and add it as a row in the table
+            despesas.forEach((despesa, index) => {
+                const row = document.createElement("tr");
+                row.innerHTML = `
+                    <td>${despesa.data}</td>
+                    <td>${despesa.categoria}</td>
+                    <td>${despesa.descricao}</td>
+                    <td>${despesa.valor.toFixed(2)}</td>
+                    <td>${despesa.tipo}</td>
+                    <td>
+                        <button onclick="editData(${index})">Editar</button>
+                        <button onclick="deleteData(${index})">Deletar</button>
+                    </td>
+                `;
+                tableBody.appendChild(row);
+            });
+        }
+
+        /* Function to handle editing an entry */
+        function editData(index) {
+            const despesas = JSON.parse(localStorage.getItem("despesas"));
+            const despesa = despesas[index];
+
+            // Pre-fill the form with the current data of the entry being edited
+            document.getElementById("data").value = despesa.data;
+            document.getElementById("categoria").value = despesa.categoria;
+            document.getElementById("descricao").value = despesa.descricao;
+            document.getElementById("valor").value = despesa.valor;
+            document.getElementById("tipo").value = despesa.tipo;
+
+            // Update the saveData function to update the entry instead of adding a new one
+            document.getElementById("saveBtn").onclick = function () {
+                updateData(index);
+            };
+        }
+
+        /* Function to update an entry */
+        function updateData(index) {
+            const data = document.getElementById("data").value;
+            const categoria = document.getElementById("categoria").value;
+            const descricao = document.getElementById("descricao").value;
+            const valor = parseFloat(document.getElementById("valor").value);
+            const tipo = document.getElementById("tipo").value;
+
+            // Create an updated expense object
+            const updatedDespesa = { data, categoria, descricao, valor, tipo };
+
+            // Retrieve the current list of expenses from local storage and update the specified entry
+            let despesas = JSON.parse(localStorage.getItem("despesas"));
+            despesas[index] = updatedDespesa;
+            localStorage.setItem("despesas", JSON.stringify(despesas));
+
+            // Notify the user that the entry has been updated and reload the page
+            alert("Cadastro atualizado com sucesso!");
+            window.location.reload();
+        }
+
+        /* Function to delete an entry */
+        function deleteData(index) {
+            // Retrieve the list of expenses, remove the selected entry, and save it back to local storage
+            let despesas = JSON.parse(localStorage.getItem("despesas"));
+            despesas.splice(index, 1); // Remove the entry at the specified index
+            localStorage.setItem("despesas", JSON.stringify(despesas));
+
+            // Notify the user that the entry has been deleted and reload the page
+            alert("Cadastro deletado com sucesso!");
+            window.location.reload();
+        }
+    </script>
+</head>
+
+<body onload="loadData()">
+
+    <!-- Header with the title of the page -->
+    <header>
+        <h1>Gerenciar Despesas/Entradas</h1>
+    </header>
+
+    <!-- Navigation menu with links to different sections -->
+    <nav>
+        <a href="index.html">Tabela de Gastos</a>
+        <a href="orcamento.html">Orçamento</a>
+        <a href="cadastro.html">Cadastrar Despesa/Entrada</a>
+        <a href="grafico.html">Gráfico de Saldo</a>
+        <a href="categorias.html">Categorias e Subcategorias</a>
+        <a href="linha_do_tempo.html">Linha do tempo</a>
+        <a href="poupanca.html">Poupança</a>
+        <a href="viagem.html">Viagem</a>
+        <a href="serasa.html">Serasa</a>
+    </nav>
+
+    <!-- Main content where the form for adding new data is displayed -->
+    <main>
+        <h1>Cadastrar Nova Despesa/Entrada</h1>
+        <form id="formCadastro" onsubmit="saveData(event)">
+            <label for="data">Data</label>
+            <input type="date" id="data" required>
+
+            <label for="categoria">Categoria</label>
+            <select id="categoria" required>
+                <option value="Academia">Academia</option>
+                <option value="Alimentação">Alimentação</option>
+                <option value="Aluguel">Aluguel</option>
+                <option value="Água">Água</option>
+                <option value="Cartão de Crédito">Cartão de Crédito</option>
+                <option value="Celular BR">Celular BR</option>
+                <option value="Celular CA">Celular CA</option>
+                <option value="Cinema">Cinema</option>
+                <option value="Dízimo">Dízimo</option>
+                <option value="Educação">Educação</option>
+                <option value="Empréstimos">Empréstimos</option>
+                <option value="Férias">Férias</option>
+                <option value="Gasolina">Gasolina</option>
+                <option value="Internet">Internet</option>
+                <option value="Investimentos">Investimentos</option>
+                <option value="Luz">Luz</option>
+                <option value="Manutenção do Carro">Manutenção do Carro</option>
+                <option value="Ofertas">Ofertas</option>
+                <option value="Plano de Saúde">Plano de Saúde</option>
+                <option value="Pensão">Pensão</option>
+                <option value="Poupança">Poupança</option>
+                <option value="Restaurantes">Restaurantes</option>
+                <option value="Salário">Salário</option>
+                <option value="Seguro do Carro">Seguro do Carro</option>
+                <option value="Supermercado">Supermercado</option>
+                <option value="Transporte">Transporte</option>
+            </select>
+
+            <label for="descricao">Descrição</label>
+            <input type="text" id="descricao" required>
+
+            <label for="valor">Valor (R$)</label>
+            <input type="number" id="valor" required>
+
+            <label for="tipo">Tipo</label>
+            <select id="tipo" required>
+                <option value="Entrada">Entrada</option>
+                <option value="Saída">Saída</option>
+            </select>
+
+            <!-- Submit button -->
+            <button type="submit" id="saveBtn">Salvar</button>
+        </form>
+    </main>
+
+    <!-- Table displaying the saved expenses -->
+    <table>
+        <thead>
+            <tr>
+                <th>Data</th>
+                <th>Categoria</th>
+                <th>Descrição</th>
+                <th>Valor</th>
+                <th>Tipo</th>
+                <th>Ações</th>
+            </tr>
+        </thead>
+        <tbody id="despesasList">
+            <!-- Table rows will be filled dynamically by JavaScript -->
+        </tbody>
+    </table>
+</body>
+
+</html>

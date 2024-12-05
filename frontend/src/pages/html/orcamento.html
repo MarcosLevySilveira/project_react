@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang="pt-br">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Controle de Finanças Pessoais</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script> <!-- Adicionando Chart.js -->
+</head>
+
+
+<body>
+
+    <header>
+        <h1>Controle de Finanças Pessoais</h1>
+    </header>
+    
+    <nav>
+        <a href="index.html">Tabela de Gastos</a>
+        <a href="orcamento.html">Orçamento</a>
+        <a href="cadastro.html">Cadastrar Despesa/Entrada</a>
+        <a href="grafico.html">Gráfico de Saldo</a>
+        <a href="categorias.html">Categorias e Subcategorias</a>
+        <a href="linha_do_tempo.html">Linha do tempo</a>
+        <a href="poupanca.html">Poupança</a>
+        <a href="viagem.html">Viagem</a>
+        <a href="serasa.html">Serasa</a>
+    </nav>
+
+
+    <body>      
+        <div id="summary" class="summary">
+          <p><strong>Total Estimated Budget:</strong> <span id="estimatedBudget" class="positive">0.00</span></p>
+          <p><strong>Total Real Expenses:</strong> <span id="realExpenses" class="negative">0.00</span></p>
+          <p><strong>Difference:</strong> <span id="difference" class="difference">0.00</span></p>
+        </div>
+      
+        <h2>Comparison Table</h2>
+        <table>
+          <thead>
+            <tr>
+              <th>Category</th>
+              <th>Estimated Budget</th>
+              <th>Real Expenses</th>
+              <th>Difference</th>
+            </tr>
+          </thead>
+          <tbody id="comparisonTable"></tbody>
+        </table>
+      
+        <script>
+          const budgetData = [
+            { category: "Dízimo", estimated: 1000, real: 220 },
+            { category: "Ofertas", estimated: 0, real: 220 },
+            { category: "Poupança", estimated: 0, real: 350 },
+            { category: "Investimentos", estimated: 0, real: 350 },
+            { category: "Pensão", estimated: 2000, real: 2000 },  
+            { category: "Supermercado", estimated: 1500, real: 0 },
+            { category: "Água", estimated: 200, real: 0 },
+            { category: "Luz", estimated: 500, real: 0 },
+            { category: "Celular", estimated: 500, real: 0 },
+            { category: "Internet", estimated: 200, real: 0 },
+            { category: "Aluguel", estimated: 1000, real: 0 },
+            { category: "Gasolina", estimated: 400, real: 0 },
+            { category: "Manutenção do carro", estimated: 200, real: 0 },
+            { category: "Seguro", estimated: 0, real: 0 },
+            { category: "Academia", estimated: 400, real: 0 },
+            { category: "Férias", estimated: 1000, real: 0 },
+            { category: "Cartão de Crédito", estimated: 1500, real: 0 },
+            { category: "Empréstimos", estimated: 1200, real: 0 }
+          ];
+      
+          const comparisonTable = document.getElementById('comparisonTable');
+          const estimatedBudgetElement = document.getElementById('estimatedBudget');
+          const realExpensesElement = document.getElementById('realExpenses');
+          const differenceElement = document.getElementById('difference');
+      
+          let totalEstimated = 0;
+          let totalReal = 0;
+      
+          budgetData.forEach(item => {
+            const row = document.createElement('tr');
+      
+            const difference = item.real - item.estimated;
+            const differenceClass = difference > 0 ? "negative" : "positive";
+      
+            row.innerHTML = `
+              <td>${item.category}</td>
+              <td>${item.estimated.toFixed(2)}</td>
+              <td>${item.real.toFixed(2)}</td>
+              <td class="${differenceClass}">${difference.toFixed(2)}</td>
+            `;
+      
+            comparisonTable.appendChild(row);
+      
+            totalEstimated += item.estimated;
+            totalReal += item.real;
+          });
+      
+          const totalDifference = totalReal - totalEstimated;
+      
+          estimatedBudgetElement.textContent = totalEstimated.toFixed(2);
+          realExpensesElement.textContent = totalReal.toFixed(2);
+          differenceElement.textContent = totalDifference.toFixed(2);
+      
+          differenceElement.className = totalDifference > 0 ? "negative" : "positive";
+        </script>
+      </body>
+      </html>
